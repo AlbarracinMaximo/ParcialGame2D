@@ -11,6 +11,8 @@ class Personaje:
         #Movimientos de mario
         self.rectangulo_principal = self.animaciones["Quieto"][0].get_rect()
         self.rectangulo_principal.x, self.rectangulo_principal.y = posicion
+        # Definir la hitbox del personaje
+        self.hitbox = pygame.Rect(self.rectangulo_principal.x, self.rectangulo_principal.y, tamaño[0], tamaño[1])
         self.velocidad = velocidad
         self.que_hace = "Quieto"
         self.contador_pasos = 0
@@ -77,14 +79,15 @@ class Personaje:
                 if not self.esta_saltando and not self.esta_muerto:
                     self.esta_saltando = True
                     self.desplazamiento_y = self.potencia_salto
-                    salto.play()
+                    efectos_sonido['salto'].play()
             case "Quieto":
                 if not self.esta_saltando:
                     self.animar(pantalla)
-
+        
         self.aplicar_gravedad(pantalla, piso)
         self.actualizar_invulnerabilidad()
         self.verificar_muerte(pantalla)
+        self.update_hitbox()
 
     def animar(self, pantalla):
         if not self.esta_muerto:
@@ -118,9 +121,10 @@ class Personaje:
         if self.esta_saltando:
             self.animar(pantalla)
             self.rectangulo_principal.y += self.desplazamiento_y
+            self.desplazamiento_y += self.gravedad
 
-            if self.desplazamiento_y + self.gravedad < self.limite_velocidad_salto:
-                self.desplazamiento_y += self.gravedad
+            # if self.desplazamiento_y + self.gravedad < self.limite_velocidad_salto:
+            #     self.desplazamiento_y += self.gravedad
 
             if self.desplazamiento_y > 1:
                 self.esta_cayendo = True
@@ -192,7 +196,7 @@ class Personaje:
 
         if x is not None:
             bala_manager.agregar_proyectil(x, y, self.utima_tecla, 10)
-            proyectil.play()
+            efectos_sonido['proyectil'].play()
     
     def perder_vida(self):
         if self.tiempo_invulnerable <= 0:
@@ -229,7 +233,7 @@ class Personaje:
                 self.puntuacion += moneda.puntos
                 print(f"Puntuación actual: {self.puntuacion}")
                 monedas_a_eliminar.append(moneda)
-                coin.play()
+                efectos_sonido['coin'].play()
 
         # Eliminar las monedas recogidas de la lista
         for moneda in monedas_a_eliminar:
@@ -256,10 +260,14 @@ class Personaje:
     def verificar_muerte(self,pantalla):
         if self.vidas == 0:
             self.esta_muerto = True
-            muerte_personaje.play()
+            efectos_sonido['muerte_personaje'].play()
         
         if self.rectangulo_principal.y > pantalla.get_height():
             self.vidas = 0
             self.esta_muerto = True
-            muerte_personaje.play()
-        
+            efectos_sonido['coin'].play()
+    
+    def update_hitbox(self):
+        # Actualizar la posición de la hitbox para que coincida con la posición del personaje
+        self.hitbox.x = self.rectangulo_principal.x
+        self.hitbox.y = self.rectangulo_principal.y

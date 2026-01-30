@@ -1,4 +1,6 @@
 import pygame
+
+from enemigo_volador import EnemigoVolador
 pygame.font.init() 
 from pygame.locals import *
 from bala import *
@@ -25,11 +27,11 @@ class NivelTres(Nivel):
         pygame.init()
         pygame.mixer.init()
         #Config de pantalla
-        W = pantalla.get_width()
-        H = pantalla.get_height()
+        W = 1024
+        H = 720
         
         #FONDO
-        fondo = pygame.image.load(r"texturas\lvl_3.png").convert()
+        fondo = pygame.image.load(r"texturas\Mapas\Pantalla\lvl_3.png").convert()
         fondo = pygame.transform.scale(fondo, (W, H))
 
         #Movimientos del jugador del jugador
@@ -49,32 +51,30 @@ class NivelTres(Nivel):
         player = Personaje(acciones, 5, (40, 40), (140, 480))
 
         # Crear ubicaciones aleatorias
-        ubicaciones_aleatorias = [(167, 400), (390, 400), (780, 400), (935, 400)]
+        ubicaciones_aleatorias = [(167, 490), (390, 490), (780, 490), (935, 490)]
+        ojo_aleatorio = [(167, 200), (600, 200)]
 
         #respawn
-        respawn = Respawn(player,ubicaciones_aleatorias)
+        respawn = Respawn(player,ubicaciones_aleatorias, ojo_aleatorio)
 
         #Enemigos
         diccionario_animaciones = {}
-        diccionario_animaciones["derecha"] = enemigo_camina_derecha
-        diccionario_animaciones["izquierda"] = enemigo_camina_izquierda
-        diccionario_animaciones["muere"] = enemigo_aplasta
-
-        d = {"muere": diccionario_animaciones["muere"]}
-        reescalar_imagenes(d, 20, 20)
+        diccionario_animaciones["Derecha"] = enemigo_camina_derecha
+        diccionario_animaciones["Izquierda"] = enemigo_camina_izquierda
+        diccionario_animaciones["Muere"] = enemigo_aplasta
 
         bala_manager = BalaManager(respawn, player)
 
-        moneda1 = Moneda((27, 27), 50, (480, 230), r"texturas\coin.png")
-        moneda2 = Moneda((27, 27), 50, (590, 330), r"texturas\coin.png")
-        moneda3 = Moneda((27, 27), 50, (955, 405), r"texturas\coin.png")
-        moneda4 = Moneda((27, 27), 50, (700, 335), r"texturas\coin.png")
-        moneda5 = Moneda((27, 27), 50, (900, 335), r"texturas\coin.png")
-        moneda6 = Moneda((27, 27), 50, (700, 430), r"texturas\coin.png")
-        moneda7 = Moneda((27, 27), 50, (160, 150), r"texturas\coin.png")
-        moneda8 = Moneda((27, 27), 50, (245, 150), r"texturas\coin.png")
-        moneda9 = Moneda((27, 27), 50, (200, 480), r"texturas\coin.png")
-        moneda10 = Moneda((27, 27), 50, (920, 325), r"texturas\coin.png")
+        moneda1 = Moneda((27, 27), 50, (480, 230), coin)
+        moneda2 = Moneda((27, 27), 50, (590, 330), coin)
+        moneda3 = Moneda((27, 27), 50, (955, 405), coin)
+        moneda4 = Moneda((27, 27), 50, (700, 335), coin)
+        moneda5 = Moneda((27, 27), 50, (900, 335), coin)
+        moneda6 = Moneda((27, 27), 50, (700, 430), coin)
+        moneda7 = Moneda((27, 27), 50, (160, 150), coin)
+        moneda8 = Moneda((27, 27), 50, (245, 150), coin)
+        moneda9 = Moneda((27, 27), 50, (200, 480), coin)
+        moneda10 = Moneda((27, 27), 50, (920, 325), coin)
 
         # Lista de monedas
         lista_monedas = [moneda1, moneda2,moneda3,moneda4,moneda5,moneda6,moneda7,moneda8,moneda9,moneda10]
@@ -82,7 +82,7 @@ class NivelTres(Nivel):
         #Lista plataformas
         plataformas = [boss_pltaforma]
         
-        plataformas_movibles = [piso_inmovil,piso_inmovil_boss]
+        plataformas_movibles = [piso_inmovil_boss_dos,piso_inmovil_boss]
 
         flag_disparo = False
         tiempo_ultimo_disparo = 0 #Si pongo 0 es consecutivo
@@ -92,16 +92,22 @@ class NivelTres(Nivel):
 
         #Enemigos
         nuevo_jefe_animaciones = {}
-        nuevo_jefe_animaciones["derecha"] = jefe_camina_derecha
-        nuevo_jefe_animaciones["izquierda"] = jefe_camina_izquierda
-        nuevo_jefe_animaciones["muere"] = enemigo_aplasta
-
-        a = {"muere": nuevo_jefe_animaciones["muere"]}
-        reescalar_imagenes(a, 50, 50)
+        nuevo_jefe_animaciones["Derecha"] = jefe_camina_derecha
+        nuevo_jefe_animaciones["Izquierda"] = jefe_camina_izquierda
+        nuevo_jefe_animaciones["Daño"] = jefe_daño
+        nuevo_jefe_animaciones["Ataca"] = jefe_ataca
+        nuevo_jefe_animaciones["Muriendo"] = jefe_mueriendo
+        nuevo_jefe_animaciones["Muerto"] = jefe_muerto
 
         # Agrega las animaciones del nuevo jefe según sea necesario
-        nuevo_jefe = Boss(nuevo_jefe_animaciones, 5, (100, 100), (700, 200), "horizontal")  # Ajusta la posición según sea necesario
-        respawn.lista_enemigos.append(nuevo_jefe)
+        nuevo_jefe = Boss(nuevo_jefe_animaciones, 2, (100, 100), (890, 420), "horizontal")  # Ajusta la posición según sea necesario
         inicializar_base_de_datos()
 
-        super().__init__(fondo,pantalla, player,plataformas,plataformas_movibles, respawn, bala_manager, lista_monedas, fondo, diccionario_animaciones, tiempo_ultimo_disparo, flag_disparo, duracion_maxima)
+        #Enemigos
+        animaciones_enemigo_volador = {}
+        animaciones_enemigo_volador["Derecha"] = enemigo_volador_derecha
+        animaciones_enemigo_volador["Izquierda"] = enemigo_volado_izquierda
+        animaciones_enemigo_volador["Muere"] = enemigo_volador_muerto
+        lista_jefe = [nuevo_jefe]
+        
+        super().__init__(fondo,pantalla, player,plataformas,plataformas_movibles, respawn, bala_manager, lista_monedas, fondo, diccionario_animaciones, tiempo_ultimo_disparo, flag_disparo, duracion_maxima, animaciones_enemigo_volador, True, lista_jefe)

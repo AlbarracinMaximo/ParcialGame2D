@@ -1,4 +1,6 @@
 import pygame
+
+from enemigo_volador import EnemigoVolador
 pygame.font.init() 
 from pygame.locals import *
 from bala import *
@@ -25,14 +27,12 @@ class NivelUno(Nivel):
         pygame.init()
         pygame.mixer.init()
         #Config de pantalla
-        W = pantalla.get_width()
-        H = pantalla.get_height()
+        W = 1024
+        H = 720
         
         #FONDO
-        fondo = pygame.image.load(r"texturas\level_1.5.2.png").convert()
+        fondo = pygame.image.load(r"texturas\Mapas\Pantalla\level_1.5.2.png").convert()
         fondo = pygame.transform.scale(fondo, (W, H))
-
-
 
         #Movimientos del jugador del jugador
         acciones = {}
@@ -52,31 +52,30 @@ class NivelUno(Nivel):
 
         # Crear ubicaciones aleatorias
         ubicaciones_aleatorias = [(60, 408), (271, 600), (630, 597), (400, 168)]
+        ojo_aleatorio = [(60, 200), (800, 200)]
 
         #respawn
-        respawn = Respawn(player,ubicaciones_aleatorias)
+        respawn = Respawn(player,ubicaciones_aleatorias,ojo_aleatorio)
 
         #Enemigos
         diccionario_animaciones = {}
-        diccionario_animaciones["derecha"] = enemigo_camina_derecha
-        diccionario_animaciones["izquierda"] = enemigo_camina_izquierda
-        diccionario_animaciones["muere"] = enemigo_aplasta
-
-        d = {"muere": diccionario_animaciones["muere"]}
-        reescalar_imagenes(d, 20, 20)
+        diccionario_animaciones["Derecha"] = enemigo_camina_derecha
+        diccionario_animaciones["Izquierda"] = enemigo_camina_izquierda
+        diccionario_animaciones["Muere"] = enemigo_aplasta
 
         bala_manager = BalaManager(respawn, player)
+        #bala_manager_enemigo = BalaEnemigo()
 
-        moneda1 = Moneda((27, 27), 50, (360, 90), r"texturas\coin.png")
-        moneda2 = Moneda((27, 27), 50, (20, 300), r"texturas\coin.png")
-        moneda3 = Moneda((27, 27), 50, (60, 300), r"texturas\coin.png")
-        moneda4 = Moneda((27, 27), 50, (655, 240), r"texturas\coin.png")
-        moneda5 = Moneda((27, 27), 50, (800, 240), r"texturas\coin.png")
-        moneda6 = Moneda((27, 27), 50, (600, 500), r"texturas\coin.png")
-        moneda7 = Moneda((27, 27), 50, (715, 500), r"texturas\coin.png")
-        moneda8 = Moneda((27, 27), 50, (880, 500), r"texturas\coin.png")
-        moneda9 = Moneda((27, 27), 50, (450, 90), r"texturas\coin.png")
-        moneda10 = Moneda((27, 27), 50, (214, 485), r"texturas\coin.png")
+        moneda1 = Moneda((27, 27), 50, (360, 90), coin)
+        moneda2 = Moneda((27, 27), 50, (20, 300), coin)
+        moneda3 = Moneda((27, 27), 50, (60, 300), coin)
+        moneda4 = Moneda((27, 27), 50, (655, 240), coin)
+        moneda5 = Moneda((27, 27), 50, (800, 240), coin)
+        moneda6 = Moneda((27, 27), 50, (600, 500), coin)
+        moneda7 = Moneda((27, 27), 50, (715, 500), coin)
+        moneda8 = Moneda((27, 27), 50, (880, 500), coin)
+        moneda9 = Moneda((27, 27), 50, (450, 90), coin)
+        moneda10 = Moneda((27, 27), 50, (214, 485), coin)
 
         # Lista de monedas
         lista_monedas = [moneda1, moneda2,moneda3,moneda4,moneda5,moneda6,moneda7,moneda8,moneda9,moneda10]
@@ -84,8 +83,7 @@ class NivelUno(Nivel):
         #Lista plataformas
         plataformas = [piso_bajo_uno, piso_bajo_dos,
                     piso_medio, muro_medio_derecho, piso_medio_apoyo,
-                        piso_alto_apoyo_atravesable, piso_alto, muro_alto_izquierdo, muro_alto_derecho,
-                        bloque_invisible_uno, bloque_invisible_dos]
+                        piso_alto_apoyo_atravesable, piso_alto, muro_alto_izquierdo, muro_alto_derecho]
         
         #Lista_plataformas movibles
         plataformas_movibles = [trampa_baja,plataforma_movimiento]
@@ -94,5 +92,12 @@ class NivelUno(Nivel):
         tiempo_ultimo_disparo = 0 #Si pongo 0 es consecutivo
 
         duracion_maxima = 75000  # 1 minutos en milisegundos
+
+        #Enemigos
+        animaciones_enemigo_volador = {}
+        animaciones_enemigo_volador["Derecha"] = enemigo_volador_derecha
+        animaciones_enemigo_volador["Izquierda"] = enemigo_volado_izquierda
+        animaciones_enemigo_volador["Muere"] = enemigo_volador_muerto
+
         inicializar_base_de_datos()
-        super().__init__(fondo,pantalla, player,plataformas,plataformas_movibles, respawn, bala_manager, lista_monedas, fondo, diccionario_animaciones, tiempo_ultimo_disparo, flag_disparo, duracion_maxima)
+        super().__init__(fondo,pantalla, player,plataformas,plataformas_movibles, respawn, bala_manager, lista_monedas, fondo, diccionario_animaciones, tiempo_ultimo_disparo, flag_disparo, duracion_maxima, animaciones_enemigo_volador, False, None)

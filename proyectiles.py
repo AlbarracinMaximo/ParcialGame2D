@@ -4,8 +4,8 @@ from premio import Premio
 
 
 class Disparo:
-    def __init__(self, x, y, direccion,velocidad):
-        self.superficie = pygame.image.load(r"texturas\fire_ball.png")
+    def __init__(self, x, y, direccion,velocidad, path_image):
+        self.superficie = pygame.image.load(path_image)
         self.superficie = pygame.transform.scale(self.superficie, (20,20))
         self.rectangulo = self.superficie.get_rect()
         self.rectangulo.x = x
@@ -18,16 +18,6 @@ class Disparo:
             self.rectangulo.x += self.velocidad
         elif self.direccion == "Izquierda":
             self.rectangulo.x -= self.velocidad
+        elif self.direccion == "Abajo":
+            self.rectangulo.y += self.velocidad
         pantalla.blit(self.superficie, self.rectangulo)
-
-    def verificar_colision_plataforma_disparo(self, plataformas):
-        for plataforma in plataformas:
-            if self.rectangulo.colliderect(plataforma["rectangulo"]):
-                return True
-        return False
-    
-    def verificar_colision_enemigo(self, lista_enemigos):
-        for enemigo in lista_enemigos:
-            if self.rectangulo.colliderect(enemigo.rectangulo_principal):
-                return enemigo
-        return None
